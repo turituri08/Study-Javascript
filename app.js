@@ -1,30 +1,9 @@
-// let hello = 'Hello' + 'World';
-// alert(hello);
-
-// let i;
-// let num = 0;
-
-// for(i = 1; i < 11; i++){
-//   num = num + i;
-// }
-
-// alert(num);
-
-// function foo(){
-//   let x = 'webcamp'
-//   let y = 'hello webcamp'
-//   console.log(x)
-//   console.log(y)
-// }
-
-// foo()
-
-var str = "webcamp"
-
-function foo() { 
-  console.log(str)
-  var str = "dmm webcamp"
-  console.log(str)
+let x = 'hello'
+function foo(){
+  let x = 'webcamp'
 }
+console.log(x)
 
-foo()
+// letやconstには有効範囲があり、ブロックの外側で定義した変数はHTMLないどこでも使えるが、ブロック内で定義した
+// 変数はそのブロック内でしか使うことができず、外で使うと　Uncaught ReferenceError: x is not defined　という
+// エラーが出る
