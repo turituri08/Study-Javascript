@@ -21,10 +21,24 @@
     var dx = 2;
     var dy = -2;
     var ballRadius = 10;
+    //　パドルの大きさ
+    var paddleHeight = 10;
+    var paddleWidth = 75;
+    var paddleX = (canvas.width - paddleWidth) / 2;
+    var rightPressed = false;
+    var leftPressed = false;
 
     function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
         ctx.fillStyle = "#0095DD";
         ctx.fill();
         ctx.closePath();
@@ -36,6 +50,7 @@
         // 四角形の左上端のx、y座標と四角形の右下端のx、y座標を引数に入れる
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBall();
+        drawPaddle();
         x += dx;
         y += dy;
         // 左右の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
@@ -46,9 +61,37 @@
         if(y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
             dy = -dy;
         }
+        //　左右枠内に収まるようにパドルの位置を調整、代入している値をパドルの速さ
+        if(rightPressed && paddleX < canvas.width-paddleWidth) {
+            paddleX += 7;
+        }
+        else if(leftPressed && paddleX > 0) {
+            paddleX -= 7;
+        }
     }
 
     // 10ミリ秒おきにdraw関数が呼ばれ続ける
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+    function keyDownHandler(e) {
+        if(e.key == "Right" || e.key == "ArrowRight") {
+            rightPressed = true;
+        }
+        else if(e.key == "Left" || e.key == "ArrowLeft") {
+            leftPressed = true;
+        }
+    }
+
+    function keyUpHandler(e) {
+        if(e.key == "Right" || e.key == "ArrowRight") {
+            rightPressed = false;
+        }
+        else if(e.key == "Left" || e.key == "ArrowLeft") {
+            leftPressed = false;
+        }
+    }
+
     setInterval(draw, 10);
 </script>
 
