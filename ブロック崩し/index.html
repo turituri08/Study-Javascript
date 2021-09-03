@@ -15,11 +15,30 @@
 <script>
 	var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");
-    ctx.beginPath();
-    ctx.rect(20, 40, 50, 50);
-    ctx.fillStyle = "#FF0000";
-    ctx.fill();
-    ctx.closePath();
+    var x = canvas.width / 2;
+    var y = canvas.height - 30;
+    var dx = 2;
+    var dy = -2;
+
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function draw() {
+        // clearRectはCanvasの内容を消去する（軌跡が残らなくなる）
+        // 四角形の左上端のx、y座標と四角形の右下端のx、y座標を引数に入れる
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        x += dx;
+        y += dy;
+    }
+
+    // 10ミリ秒おきにdraw関数が呼ばれ続ける
+    setInterval(draw, 10);
 </script>
 
 </body>
