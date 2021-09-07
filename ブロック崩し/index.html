@@ -156,10 +156,16 @@
                         b.status = 0;
                         // 衝突するたびにスコアをプラスしていく
                         score++;
+                        //　ブロックを消すたびにボールの色を変える
+                        if(score % 2 != 0){
+                            ballColor = "red";
+                        }else{
+                            ballColor = "#0095DD"
+                        }
                         if(score == brickRowCount*brickColumnCount) {
                             alert("YOU WIN, CONGRATULATIONS!");
                             document.location.reload();
-                        }
+                        }                    
                     }
                 }
             }
