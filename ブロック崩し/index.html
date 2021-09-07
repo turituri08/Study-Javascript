@@ -39,6 +39,8 @@
     //　キャンバスから見たブロックの位置
     var brickOffsetTop = 30;
     var brickOffsetLeft = 30;
+    var score = 0;
+    var ballColor = "#0095DD"
 
     var bricks = [];
     for(var c=0; c<brickColumnCount; c++) {
@@ -51,7 +53,7 @@
     function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = "#0095DD";
+        ctx.fillStyle = ballColor;
         ctx.fill();
         ctx.closePath();
     }
@@ -85,13 +87,13 @@
     }
 
     function draw() {
-        var ballColor = null;
         // clearRectはCanvasの内容を消去する（軌跡が残らなくなる）
         // 四角形の左上端のx、y座標と四角形の右下端のx、y座標を引数に入れる
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBricks();
         drawBall();
         drawPaddle();
+        drawScore();
         collisionDetection();
         x += dx;
         y += dy;
@@ -152,10 +154,22 @@
                     if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
                         dy = -dy;
                         b.status = 0;
+                        // 衝突するたびにスコアをプラスしていく
+                        score++;
+                        if(score == brickRowCount*brickColumnCount) {
+                            alert("YOU WIN, CONGRATULATIONS!");
+                            document.location.reload();
+                        }
                     }
                 }
             }
         }
+    }
+
+    function drawScore() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Score: "+score, 8, 20);
     }
 
     var interval = setInterval(draw, 10);
