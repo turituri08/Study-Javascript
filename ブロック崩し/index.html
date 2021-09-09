@@ -123,9 +123,18 @@
         }
     }
 
-    // 10ミリ秒おきにdraw関数が呼ばれ続ける
+    // キーボードの入力を受け取る
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
+    // マウスの入力を受け取る
+    document.addEventListener("mousemove", mouseMoveHandler, false);
+
+    function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        if(relativeX > 0 && relativeX < canvas.width) {
+            paddleX = relativeX - paddleWidth/2;
+        }
+    }
 
     function keyDownHandler(e) {
         if(e.key == "Right" || e.key == "ArrowRight") {
@@ -178,6 +187,7 @@
         ctx.fillText("Score: "+score, 8, 20);
     }
 
+    // 10ミリ秒おきにdraw関数が呼ばれ続ける
     var interval = setInterval(draw, 10);
 </script>
 
