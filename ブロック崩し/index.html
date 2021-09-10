@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop</title>
-    <style>
-    	* { padding: 0; margin: 0; }
-    	canvas { background: #eee; display: block; margin: 0 auto; }
-    </style>
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <title>Gamedev Canvas Workshop</title>
+        <style>
+            * { padding: 0; margin: 0; }
+            canvas { background: #eee; display: block; margin: 0 auto; }
+        </style>
+    </head>
 <body>
-
-<canvas id="myCanvas" width="480" height="320"></canvas>
+    <canvas id="myCanvas" width="810" height="500"></canvas>
 
 <script>
 	var canvas = document.getElementById("myCanvas");
@@ -18,29 +17,30 @@
     var x = canvas.width / 2;
     var y = canvas.height - 30;
     //　ボールの動く速さ
-    var dx = 2;
-    var dy = -2;
+    var dx = 3;
+    var dy = -3;
     var ballRadius = 10;
     //　パドルの大きさ
     var paddleHeight = 10;
-    var paddleWidth = 75;
+    var paddleWidth = 85;
     var paddleX = (canvas.width - paddleWidth) / 2;
     var rightPressed = false;
     var leftPressed = false;
     //　ブロック行の個数
-    var brickRowCount = 3;
+    var brickRowCount = 6;
     //　ブロックの行の個数
-    var brickColumnCount = 5;
+    var brickColumnCount = 9;
     //　ブロックの大きさ
     var brickWidth = 75;
     var brickHeight = 20;
     //　ブロックの隙間
     var brickPadding = 10;
     //　キャンバスから見たブロックの位置
-    var brickOffsetTop = 30;
+    var brickOffsetTop = 40;
     var brickOffsetLeft = 30;
     var score = 0;
     var ballColor = "#0095DD"
+    var lives = 3;
 
     var bricks = [];
     for(var c=0; c<brickColumnCount; c++) {
@@ -94,6 +94,7 @@
         drawBall();
         drawPaddle();
         drawScore();
+        drawLives();
         collisionDetection();
         x += dx;
         y += dy;
@@ -109,9 +110,19 @@
             if(x > paddleX && x < paddleX + paddleWidth){
                 dy = -dy;
             }else{
-                alert("GAME OVER");
-                document.location.reload();
-                clearInterval(interval); 
+                lives--;
+                if(!lives) {
+                    alert("GAME OVER");
+                    document.location.reload();
+                }
+                else {
+                    // パドルの位置を中央にリセット
+                    x = canvas.width/2;
+                    y = canvas.height-30;
+                    dx = 3;
+                    dy = -3;
+                    paddleX = (canvas.width-paddleWidth)/2;
+                }
             }
         }
         //　左右枠内に収まるようにパドルの位置を調整、代入している値をパドルの速さ
@@ -121,6 +132,8 @@
         else if(leftPressed && paddleX > 0) {
             paddleX -= 7;
         }
+
+        requestAnimationFrame(draw);
     }
 
     // キーボードの入力を受け取る
@@ -187,8 +200,15 @@
         ctx.fillText("Score: "+score, 8, 20);
     }
 
+    function drawLives() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+    }
+
     // 10ミリ秒おきにdraw関数が呼ばれ続ける
-    var interval = setInterval(draw, 10);
+    // var interval = setInterval(draw, 10);
+    var interval = draw();
 </script>
 
 </body>
