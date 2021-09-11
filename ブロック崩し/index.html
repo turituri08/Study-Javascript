@@ -11,205 +11,221 @@
 <body>
     <canvas id="myCanvas" width="810" height="500"></canvas>
 
-<script>
-	var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    var x = canvas.width / 2;
-    var y = canvas.height - 30;
-    //　ボールの動く速さ
-    var dx = 3;
-    var dy = -3;
-    var ballRadius = 10;
-    //　パドルの大きさ
-    var paddleHeight = 10;
-    var paddleWidth = 85;
-    var paddleX = (canvas.width - paddleWidth) / 2;
-    var rightPressed = false;
-    var leftPressed = false;
-    //　ブロック行の個数
-    var brickRowCount = 6;
-    //　ブロックの行の個数
-    var brickColumnCount = 9;
-    //　ブロックの大きさ
-    var brickWidth = 75;
-    var brickHeight = 20;
-    //　ブロックの隙間
-    var brickPadding = 10;
-    //　キャンバスから見たブロックの位置
-    var brickOffsetTop = 40;
-    var brickOffsetLeft = 30;
-    var score = 0;
-    var ballColor = "#0095DD"
-    var lives = 3;
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");    
+        var x = canvas.width / 2;
+        var y = canvas.height - 30;
+        var characterX = canvas.width / 2;
+        var characterY = canvas.height / 2;
+        var characterW = 50;
+        var characterH = 60;
+        //　ボールの動く速さ
+        var dx = 3;
+        var dy = -3;
+        var ballRadius = 10;
+        //　パドルの大きさ
+        var paddleHeight = 10;
+        var paddleWidth = 85;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+        var rightPressed = false;
+        var leftPressed = false;
+        //　ブロック行の個数
+        var brickRowCount = 5;
+        //　ブロックの行の個数
+        var brickColumnCount = 9;
+        //　ブロックの大きさ
+        var brickWidth = 75;
+        var brickHeight = 20;
+        //　ブロックの隙間
+        var brickPadding = 10;
+        //　キャンバスから見たブロックの位置
+        var brickOffsetTop = 40;
+        var brickOffsetLeft = 30;
+        var score = 0;
+        var ballColor = "#0095DD"
+        var lives = 3;
 
-    var bricks = [];
-    for(var c=0; c<brickColumnCount; c++) {
-        bricks[c] = [];
-        for(var r=0; r<brickRowCount; r++) {
-            bricks[c][r] = { x: 0, y: 0, status: 1 };
-        }
-    }
-
-    function drawBall() {
-        ctx.beginPath();
-        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
-        ctx.fillStyle = ballColor;
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    function drawPaddle() {
-        ctx.beginPath();
-        ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    function drawBricks() {
+        var img = new Image();
+        img.src = "me.png";
+        
+        var bricks = [];
         for(var c=0; c<brickColumnCount; c++) {
+            bricks[c] = [];
             for(var r=0; r<brickRowCount; r++) {
-                // もしstatusが１ならブロックを描画する、０ならすでにボールが当たっているため描画しない
-                if(bricks[c][r].status == 1) {
-                    //　ブロックのそれぞれの(x, y)座標に値が毎回変わるようcとrをかけて代入している
-                    var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
-                    var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
-                    bricks[c][r].x = brickX;
-                    bricks[c][r].y = brickY;
-                    ctx.beginPath();
-                    ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                    ctx.fillStyle = "#0095DD";
-                    ctx.fill();
-                    ctx.closePath();
-                }
+                bricks[c][r] = { x: 0, y: 0, status: 1 };
             }
         }
-    }
 
-    function draw() {
-        // clearRectはCanvasの内容を消去する（軌跡が残らなくなる）
-        // 四角形の左上端のx、y座標と四角形の右下端のx、y座標を引数に入れる
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBricks();
-        drawBall();
-        drawPaddle();
-        drawScore();
-        drawLives();
-        collisionDetection();
-        x += dx;
-        y += dy;
-        // 左右の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
-        if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-            dx = -dx;
-        }
-        // 上の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
-        if(y + dy < ballRadius) {
-            dy = -dy;
-        // パドルの幅内ならボールの向きを変える、底に当たるとゲームオーバー
-        }else if(y + dy > canvas.height - ballRadius){
-            if(x > paddleX && x < paddleX + paddleWidth){
-                dy = -dy;
-            }else{
-                lives--;
-                if(!lives) {
-                    alert("GAME OVER");
-                    document.location.reload();
-                }
-                else {
-                    // パドルの位置を中央にリセット
-                    x = canvas.width/2;
-                    y = canvas.height-30;
-                    dx = 3;
-                    dy = -3;
-                    paddleX = (canvas.width-paddleWidth)/2;
-                }
-            }
-        }
-        //　左右枠内に収まるようにパドルの位置を調整、代入している値をパドルの速さ
-        if(rightPressed && paddleX < canvas.width-paddleWidth) {
-            paddleX += 7;
-        }
-        else if(leftPressed && paddleX > 0) {
-            paddleX -= 7;
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+            ctx.fillStyle = ballColor;
+            ctx.fill();
+            ctx.closePath();
         }
 
-        requestAnimationFrame(draw);
-    }
-
-    // キーボードの入力を受け取る
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-    // マウスの入力を受け取る
-    document.addEventListener("mousemove", mouseMoveHandler, false);
-
-    function mouseMoveHandler(e) {
-        var relativeX = e.clientX - canvas.offsetLeft;
-        if(relativeX > 0 && relativeX < canvas.width) {
-            paddleX = relativeX - paddleWidth/2;
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
         }
-    }
 
-    function keyDownHandler(e) {
-        if(e.key == "Right" || e.key == "ArrowRight") {
-            rightPressed = true;
+        function drawImage(){
+            ctx.drawImage(img, characterX, characterY, characterW, characterH);
         }
-        else if(e.key == "Left" || e.key == "ArrowLeft") {
-            leftPressed = true;
-        }
-    }
 
-    function keyUpHandler(e) {
-        if(e.key == "Right" || e.key == "ArrowRight") {
-            rightPressed = false;
-        }
-        else if(e.key == "Left" || e.key == "ArrowLeft") {
-            leftPressed = false;
-        }
-    }
-
-    function collisionDetection() {
-        for(var c=0; c<brickColumnCount; c++) {
-            for(var r=0; r<brickRowCount; r++) {
-                var b = bricks[c][r];
-                if(b.status == 1){
-                    // ボールのx座標がブロックの左端から右端の間にある、かつボールのy座標がブロックの上下幅の間にある
-                    if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
-                        dy = -dy;
-                        b.status = 0;
-                        // 衝突するたびにスコアをプラスしていく
-                        score++;
-                        //　ブロックを消すたびにボールの色を変える
-                        if(score % 2 != 0){
-                            ballColor = "red";
-                        }else{
-                            ballColor = "#0095DD"
-                        }
-                        if(score == brickRowCount*brickColumnCount) {
-                            alert("YOU WIN, CONGRATULATIONS!");
-                            document.location.reload();
-                        }                    
+        function drawBricks() {
+            for(var c=0; c<brickColumnCount; c++) {
+                for(var r=0; r<brickRowCount; r++) {
+                    // もしstatusが１ならブロックを描画する、０ならすでにボールが当たっているため描画しない
+                    if(bricks[c][r].status == 1) {
+                        //　ブロックのそれぞれの(x, y)座標に値が毎回変わるようcとrをかけて代入している
+                        var brickX = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+                        var brickY = (r*(brickHeight+brickPadding))+brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#0095DD";
+                        ctx.fill();
+                        ctx.closePath();
                     }
                 }
             }
         }
-    }
 
-    function drawScore() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
-        ctx.fillText("Score: "+score, 8, 20);
-    }
+        function draw() {
+            // clearRectはCanvasの内容を消去する（軌跡が残らなくなる）
+            // 四角形の左上端のx、y座標と四角形の右下端のx、y座標を引数に入れる
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            img.onload = drawImage();
+            drawScore();
+            drawLives();
+            collisionDetection();
+            x += dx;
+            y += dy;
+            // 左右の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
+            if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            // 上の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
+            if(y + dy < ballRadius) {
+                dy = -dy;
+            // パドルの幅内ならボールの向きを変える、底に当たるとゲームオーバー
+            }else if(y + dy > canvas.height - ballRadius){
+                if(x > paddleX && x < paddleX + paddleWidth){
+                    dy = -dy;
+                }else{
+                    lives--;
+                    if(!lives) {
+                        alert("GAME OVER");
+                        document.location.reload();
+                    }
+                    else {
+                        // パドルの位置を中央にリセット
+                        x = canvas.width/2;
+                        y = canvas.height-30;
+                        dx = 3;
+                        dy = -3;
+                        paddleX = (canvas.width-paddleWidth)/2;
+                    }
+                }
+            }
+            //　左右枠内に収まるようにパドルの位置を調整、代入している値をパドルの速さ
+            if(rightPressed && paddleX < canvas.width-paddleWidth) {
+                paddleX += 7;
+            }
+            else if(leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
 
-    function drawLives() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
-        ctx.fillText("Lives: "+lives, canvas.width-65, 20);
-    }
+            requestAnimationFrame(draw);
+        }
 
-    // 10ミリ秒おきにdraw関数が呼ばれ続ける
-    // var interval = setInterval(draw, 10);
-    var interval = draw();
-</script>
+        // キーボードの入力を受け取る
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+        // マウスの入力を受け取る
+        document.addEventListener("mousemove", mouseMoveHandler, false);
 
-</body>
+        function mouseMoveHandler(e) {
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if(relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth/2;
+            }
+        }
+
+        function keyDownHandler(e) {
+            if(e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = true;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if(e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = false;
+            }
+            else if(e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+        function collisionDetection() {
+            for(var c=0; c<brickColumnCount; c++) {
+                for(var r=0; r<brickRowCount; r++) {
+                    var b = bricks[c][r];
+                    if(b.status == 1){
+                        // ボールのx座標がブロックの左端から右端の間にある、かつボールのy座標がブロックの上下幅の間にある
+                        if(x > b.x && x < b.x+brickWidth && y > b.y && y < b.y+brickHeight) {
+                            dy = -dy;
+                            b.status = 0;
+                            // 衝突するたびにスコアをプラスしていく
+                            score++;
+                            //　ブロックを消すたびにボールの色を変える
+                            if(score % 2 != 0){
+                                ballColor = "red";
+                            }else{
+                                ballColor = "#0095DD"
+                            }
+                            if(score == brickRowCount*brickColumnCount) {
+                                alert("YOU WIN, CONGRATULATIONS!");
+                                document.location.reload();
+                            }                    
+                        }
+                    }
+                }
+            }
+        }
+
+        img.onload = function(){
+            ctx.drawImage(img, x, y -150);  //400x300に縮小表示
+        }
+
+        function drawScore() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Score: "+score, 8, 20);
+        }
+
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+        }
+
+        // 10ミリ秒おきにdraw関数が呼ばれ続ける
+        // var interval = setInterval(draw, 10);
+        var interval = draw();
+    </script>
+
+  </body>
 </html>
