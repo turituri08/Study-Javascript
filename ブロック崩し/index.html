@@ -19,8 +19,8 @@
         //　キャラクターの設定
         var characterX = canvas.width / 2;
         var characterY = canvas.height / 2;
-        var characterW = 50;
-        var characterH = 60;
+        var characterW = 60;
+        var characterH = 70;
         //　キャラクターの動く速さ
         var cx = 2;
         //　ボールの動く速さ
@@ -111,6 +111,7 @@
             drawScore();
             drawLives();
             collisionDetection();
+            collisionCharacter();
             x += dx;
             y += dy;
             characterX += cx;
@@ -185,6 +186,15 @@
             else if(e.key == "Left" || e.key == "ArrowLeft") {
                 leftPressed = false;
             }
+        }
+
+        function collisionCharacter(){
+            if(x > characterX && x < characterX+characterW && y > characterY && y < characterY+characterH) {
+                dy = -dy;
+            }
+            // if(y < characterY && y > characterY - characterH && x > characterX-x && x < characterX + characterH) {
+            //     dx = -dx;
+            // }
         }
 
         function collisionDetection() {
