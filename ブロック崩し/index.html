@@ -19,8 +19,10 @@
         //　キャラクターの設定
         var characterX = canvas.width / 2;
         var characterY = canvas.height / 2;
-        var characterW = 60;
-        var characterH = 70;
+        var characterW = 80;
+        var characterH = 100;
+        var offsetX = characterW / 2;
+        var offsetY = characterH / 2;
         //　キャラクターの動く速さ
         var cx = 2;
         //　ボールの動く速さ
@@ -77,7 +79,7 @@
         }
 
         function drawImage(){
-            ctx.drawImage(img, characterX, characterY, characterW, characterH);
+            ctx.drawImage(img, characterX - offsetX, characterY - offsetY, characterW, characterH);
         }
 
         function drawBricks() {
@@ -120,7 +122,7 @@
                 dx = -dx;
             }
             //　左右の枠内に収まるように、枠を超えていたら-をつけてキャラクターの動く方向を逆転させる
-            if(canvas.width < characterX + characterW || characterX < 0) {
+            if(canvas.width < characterX + characterW - offsetX || characterX - offsetX < 0) {
                 cx = -cx;
             }
             // 上の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
@@ -189,12 +191,22 @@
         }
 
         function collisionCharacter(){
-            if(x > characterX && x < characterX+characterW && y > characterY && y < characterY+characterH) {
-                dy = -dy;
-            }
-            // if(y < characterY && y > characterY - characterH && x > characterX-x && x < characterX + characterH) {
+            //　キャラクターへのx軸への衝突で跳ね返る
+            
+            // if((x > characterX && x < characterX + characterW) && ((characterY - 4 < y && y < characterY + 4) || (characterY + characterH - 4 < y && y < characterY + characterH + 4))){
+            //     dy = -dy;
+            // }
+
+            // if((y > characterY && y < characterY + characterH) && (x == characterX || x == characterX + characterW)) {
             //     dx = -dx;
             // }
+
+        }
+
+        function distance (x, y, characterX, characterY){
+            p = x - characterX;
+            q = y - characterY;
+            return Math.sqrt(p * p + q * q);
         }
 
         function collisionDetection() {
