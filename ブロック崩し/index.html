@@ -19,12 +19,12 @@
         //　キャラクターの設定
         var characterX = canvas.width / 2;
         var characterY = canvas.height / 2;
-        var characterW = 200;
-        var characterH = 150;
+        var characterW = 80;
+        var characterH = 70;
         // var offsetX = characterW / 2;
         // var offsetY = characterH / 2;
         //　キャラクターの動く速さ
-        var cx = 2;
+        // var cx = 2;
         //　ボールの動く速さ
         var dx = 3;
         var dy = -3;
@@ -109,23 +109,23 @@
             drawBricks();
             drawBall();
             drawPaddle();
-            // img.onload = drawImage();
+            img.onload = drawImage();
             drawScore();
             drawLives();
             collisionDetection();
             // collisionCharacter();
             x += dx;
             y += dy;
-            characterX += cx;
+            // characterX += cx;
             paddleX = x - paddleWidth / 2
             // 左右の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
             if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                 dx = -dx;
             }
             //　左右の枠内に収まるように、枠を超えていたら-をつけてキャラクターの動く方向を逆転させる
-            if(canvas.width < characterX + characterW || characterX < 0) {
-                cx = -cx;
-            }
+            // if(canvas.width < characterX + characterW || characterX < 0) {
+            //     cx = -cx;
+            // }
             // 上の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
             if(y + dy < ballRadius) {
                 dy = -dy;
@@ -168,8 +168,12 @@
 
         function mouseMoveHandler(e) {
             var relativeX = e.clientX - canvas.offsetLeft;
+            var relativeY = e.clientY;
             if(relativeX > 0 && relativeX < canvas.width) {
-                paddleX = relativeX - paddleWidth/2;
+                characterX = relativeX - characterW / 2;
+            }
+            if(relativeY > canvas.height / 2 && relativeY < canvas.height) {
+                characterY = relativeY - characterH / 2;
             }
         }
 
