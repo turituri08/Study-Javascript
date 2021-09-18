@@ -19,10 +19,10 @@
         //　キャラクターの設定
         var characterX = canvas.width / 2;
         var characterY = canvas.height / 2;
-        var characterW = 80;
-        var characterH = 100;
-        var offsetX = characterW / 2;
-        var offsetY = characterH / 2;
+        var characterW = 200;
+        var characterH = 150;
+        // var offsetX = characterW / 2;
+        // var offsetY = characterH / 2;
         //　キャラクターの動く速さ
         var cx = 2;
         //　ボールの動く速さ
@@ -32,7 +32,7 @@
         //　パドルの大きさ
         var paddleHeight = 10;
         var paddleWidth = 85;
-        var paddleX = (canvas.width - paddleWidth) / 2;
+        var paddleX = x;
         var rightPressed = false;
         var leftPressed = false;
         //　ブロック行の個数
@@ -79,7 +79,7 @@
         }
 
         function drawImage(){
-            ctx.drawImage(img, characterX - offsetX, characterY - offsetY, characterW, characterH);
+            ctx.drawImage(img, characterX, characterY, characterW, characterH);
         }
 
         function drawBricks() {
@@ -109,20 +109,21 @@
             drawBricks();
             drawBall();
             drawPaddle();
-            img.onload = drawImage();
+            // img.onload = drawImage();
             drawScore();
             drawLives();
             collisionDetection();
-            collisionCharacter();
+            // collisionCharacter();
             x += dx;
             y += dy;
             characterX += cx;
+            paddleX = x - paddleWidth / 2
             // 左右の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
             if(x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                 dx = -dx;
             }
             //　左右の枠内に収まるように、枠を超えていたら-をつけてキャラクターの動く方向を逆転させる
-            if(canvas.width < characterX + characterW - offsetX || characterX - offsetX < 0) {
+            if(canvas.width < characterX + characterW || characterX < 0) {
                 cx = -cx;
             }
             // 上の枠内に収まるように、枠を超えていたら-をつけてボールの動く方向を逆転させる
@@ -148,7 +149,7 @@
                     }
                 }
             }
-            //　左右枠内に収まるようにパドルの位置を調整、代入している値をパドルの速さ
+            //　左右枠内に収まるようにパドルの位置を調整
             if(rightPressed && paddleX < canvas.width-paddleWidth) {
                 paddleX += 7;
             }
@@ -190,24 +191,11 @@
             }
         }
 
-        function collisionCharacter(){
-            //　キャラクターへのx軸への衝突で跳ね返る
-            
-            // if((x > characterX && x < characterX + characterW) && ((characterY - 4 < y && y < characterY + 4) || (characterY + characterH - 4 < y && y < characterY + characterH + 4))){
-            //     dy = -dy;
-            // }
-
-            // if((y > characterY && y < characterY + characterH) && (x == characterX || x == characterX + characterW)) {
-            //     dx = -dx;
-            // }
-
-        }
-
-        function distance (x, y, characterX, characterY){
-            p = x - characterX;
-            q = y - characterY;
-            return Math.sqrt(p * p + q * q);
-        }
+        // function distance(x, y, characterX, characterY){
+        //     p = x - characterX;
+        //     q = y - characterY;
+        //     return Math.sqrt(p * p + q * q);
+        // }
 
         function collisionDetection() {
             for(var c=0; c<brickColumnCount; c++) {
