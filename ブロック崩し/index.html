@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        <title>Gamedev Canvas Workshop</title>
+        <title>ブロック崩し</title>
         <style>
             * { padding: 0; margin: 0; }
             canvas { background: #eee; display: block; margin: 0 auto; }
@@ -21,8 +21,9 @@
         var characterY = canvas.height / 2;
         var characterW = 80;
         var characterH = 70;
-        // var offsetX = characterW / 2;
-        // var offsetY = characterH / 2;
+        //　キャラクターの中心をx,y座標に設定
+        var offsetX = characterW / 2;
+        var offsetY = characterH / 2;
         //　キャラクターの動く速さ
         // var cx = 2;
         //　ボールの動く速さ
@@ -52,7 +53,7 @@
         var lives = 3;
 
         var img = new Image();
-        img.src = "me.png";
+        img.src = "character.PNG";
         
         var bricks = [];
         for(var c=0; c<brickColumnCount; c++) {
@@ -79,7 +80,7 @@
         }
 
         function drawImage(){
-            ctx.drawImage(img, characterX, characterY, characterW, characterH);
+            ctx.drawImage(img, characterX - offsetX, characterY - offsetY, characterW, characterH);
         }
 
         function drawBricks() {
@@ -167,9 +168,9 @@
         document.addEventListener("mousemove", mouseMoveHandler, false);
 
         function mouseMoveHandler(e) {
-            var relativeX = e.clientX - canvas.offsetLeft;
-            var relativeY = e.clientY;
-            if(relativeX > 0 && relativeX < canvas.width) {
+            var relativeX = e.clientX - canvas.offsetLeft + offsetX;
+            var relativeY = e.clientY + offsetY;
+            if(relativeX - characterW > 0 && relativeX < canvas.width) {
                 characterX = relativeX - characterW / 2;
             }
             if(relativeY > canvas.height / 2 && relativeY < canvas.height) {
