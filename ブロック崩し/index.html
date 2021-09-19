@@ -22,8 +22,8 @@
         var characterW = 80;
         var characterH = 70;
         //　キャラクターの中心をx,y座標に設定
-        var offsetX = characterW / 2;
-        var offsetY = characterH / 2;
+        // var offsetX = characterW / 2;
+        // var offsetY = characterH / 2;
         //　キャラクターの動く速さ
         // var cx = 2;
         //　ボールの動く速さ
@@ -80,7 +80,8 @@
         }
 
         function drawImage(){
-            ctx.drawImage(img, characterX - offsetX, characterY - offsetY, characterW, characterH);
+            // ctx.drawImage(img, characterX - offsetX, characterY - offsetY, characterW, characterH);
+            ctx.drawImage(img, characterX, characterY, characterW, characterH);
         }
 
         function drawBricks() {
@@ -114,7 +115,7 @@
             drawScore();
             drawLives();
             collisionDetection();
-            // collisionCharacter();
+            collisionCharacter();
             x += dx;
             y += dy;
             // characterX += cx;
@@ -168,12 +169,15 @@
         document.addEventListener("mousemove", mouseMoveHandler, false);
 
         function mouseMoveHandler(e) {
-            var relativeX = e.clientX - canvas.offsetLeft + offsetX;
-            var relativeY = e.clientY + offsetY;
-            if(relativeX - characterW > 0 && relativeX < canvas.width) {
+            //　キャラクターの座標が中心の場合
+            // var relativeX = e.clientX - canvas.offsetLeft + offsetX;
+            // var relativeY = e.clientY + offsetY;
+            var relativeX = e.clientX - canvas.offsetLeft;
+            var relativeY = e.clientY;
+            if(relativeX - characterW / 2 > 0 && relativeX + characterW / 2 < canvas.width) {
                 characterX = relativeX - characterW / 2;
             }
-            if(relativeY > canvas.height / 2 && relativeY < canvas.height) {
+            if(relativeY > canvas.height / 2 && relativeY < canvas.height - characterH / 2) {
                 characterY = relativeY - characterH / 2;
             }
         }
@@ -193,6 +197,16 @@
             }
             else if(e.key == "Left" || e.key == "ArrowLeft") {
                 leftPressed = false;
+            }
+        }
+
+        function collisionCharacter(){
+            if(x > characterX && x < characterX + characterW && y > characterY && y < characterY + characterH){
+                lives--;
+                if(!lives) {
+                    alert("GAME OVER");
+                    document.location.reload();
+                }
             }
         }
 
