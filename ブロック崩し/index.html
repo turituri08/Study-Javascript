@@ -51,6 +51,9 @@
         var score = 0;
         var ballColor = "#0095DD"
         var lives = 3;
+        var nowTime = 0;
+        var invincibleTime = 0;
+        var invincibleCharacter = false;
 
         var img = new Image();
         img.src = "character.PNG";
@@ -107,6 +110,8 @@
         function draw() {
             // clearRectはCanvasの内容を消去する（軌跡が残らなくなる）
             // 四角形の左上端のx、y座標と四角形の右下端のx、y座標を引数に入れる
+            nowTime = Date.now() / 1000;
+            console.log(nowTime);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBricks();
             drawBall();
@@ -158,6 +163,10 @@
             else if(leftPressed && paddleX > 0) {
                 paddleX -= 7;
             }
+            //　時間が経過したら無敵時間を終了させる
+            if(nowTime >= invincibleTime){
+                invincibleCharacter = false;
+            }
 
             requestAnimationFrame(draw);
         }
@@ -201,8 +210,13 @@
         }
 
         function collisionCharacter(){
-            if(x > characterX && x < characterX + characterW && y > characterY && y < characterY + characterH){
+            if(x > characterX && x < characterX + characterW && y > characterY && y < characterY + characterH && !invincibleCharacter){
+                //　キャラクターと衝突したら大きさを二倍にして、2秒間の間だけ無敵時間にする
+                characterW = characterW * 2;
+                characterH = characterH * 2;
                 lives--;
+                invincibleTime = nowTime + 2.000;
+                invincibleCharacter = true;
                 if(!lives) {
                     alert("GAME OVER");
                     document.location.reload();
